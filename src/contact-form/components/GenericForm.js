@@ -4,7 +4,7 @@ import { getTranslation } from '../../main/translate'
 import { IDENTIFIER } from '../../main/constants'
 import CustomButton from '../../components/Button'
 
-export const GenericForm = ({ handleSubmit, language, options = [] }) => {
+export const GenericForm = ({ handleSubmit, onCancel, language, options = [] }) => {
   const [data, setData] = useState({})
 
   useEffect(() => {
@@ -16,6 +16,11 @@ export const GenericForm = ({ handleSubmit, language, options = [] }) => {
   }
 
   const isValid = Object.keys(data).length === options.length
+
+  const onCancelation = () => {
+    setData({})
+    onCancel()
+  }
 
   return (
     <div>
@@ -35,7 +40,7 @@ export const GenericForm = ({ handleSubmit, language, options = [] }) => {
       <div className='buttonGroup'>
         <CustomButton
           label={getTranslation({value: IDENTIFIER.CANCEL, language })}
-          onClick={() => setData({})}
+          onClick={onCancelation}
         />
         <CustomButton
           disabled={!isValid}

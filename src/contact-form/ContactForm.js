@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { IDENTIFIER } from '../main/constants'
+import { IDENTIFIER, SERVER_URL } from '../main/constants'
 import { getTranslation } from '../main/translate'
 import CustomRadio from '../components/Radio'
 import { GenericForm } from './components/GenericForm'
 import { Summary } from './components/Summary'
 import './ContactForm.css'
+import { request } from '../tools/tools'
 
 const COMPANY_DATA = [IDENTIFIER.COMPANY, IDENTIFIER.USTID, IDENTIFIER.COUNTRY]
 const PRIVATE_DATA = [IDENTIFIER.FIRST_NAME, IDENTIFIER.LAST_NAME, IDENTIFIER.COUNTRY, IDENTIFIER.EMAIL]
@@ -30,8 +31,18 @@ export const ContactForm = ({ title, lang = 'eng' }) => {
     setCustomerType('')
   }
 
-  const onFinish = () => {
-    console.log('Finished')
+  const onFinish = async () => {
+    try {
+      const result = await request({
+        method: 'POST',
+        url: `${SERVER_URL}/customer`,
+        body: { customerType, ...userData }
+      })
+      alert(`Successfully created new customer with id: ${result._id}`)
+      onCancel()
+    } catch (err) {
+      alert(`Oops, something went wrong: ${err.message} \n please try again`)
+    }
   }
 
   let data
@@ -61,7 +72,7 @@ export const ContactForm = ({ title, lang = 'eng' }) => {
       }
 
       {
-        showForm && <GenericForm language={lang} handleSubmit={onHandleSubmitForm} options={data} />
+        showForm && <GenericForm language={lang} handleSubmit={onHandleSubmitForm} onCancel={onCancel} options={data} />
       }
 
       {
